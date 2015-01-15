@@ -35,7 +35,13 @@ namespace React
 		/// JavaScript variable set when user-provided scripts have been loaded
 		/// </summary>
 		protected const string USER_SCRIPTS_LOADED_KEY = "_ReactNET_UserScripts_Loaded";
-		/// <summary>
+
+   		/// <summary>
+		/// JavaScript variable set when user-provided scripts have been loaded
+		/// </summary>
+		protected const string ROUTER_OUTPUT_KEY = "_ReactNET_RouterOutput_Html";
+
+        /// <summary>
 		/// Stack size to use for JSXTransformer if the default stack is insufficient
 		/// </summary>
 		protected const int LARGE_STACK_SIZE = 2 * 1024 * 1024;
@@ -275,6 +281,7 @@ namespace React
 			}
 		}
 
+        
 		/// <summary>
 		/// Creates an instance of the specified React JavaScript component.
 		/// </summary>
@@ -299,6 +306,56 @@ namespace React
 			_components.Add(component);
 			return component;
 		}
+
+        /// <summary>
+        /// Uses React Router to render out the correct route for the given url
+        /// </summary>
+        /// <param name="url">Relative url from the applications root (ie "/country/england")</param>
+        /// <param name="containerId">ID to use for the container HTML tag. Defaults to an auto-generated ID</param>
+        /// <returns></returns>
+        public virtual string GetRoutedHtmlForUrl( string url, string containerId = null ) {
+            /*
+             * For now assume there is a var routes = {} declared in the bundled code
+             */
+            // Clear out polling var just in case
+            Execute( String.Format( "{0} = null", ROUTER_OUTPUT_KEY ) );
+
+            EnsureUserScriptsLoaded();
+			if (string.IsNullOrEmpty(containerId))
+			{
+				_maxContainerId++;
+				containerId = string.Format(CONTAINER_ELEMENT_NAME, _maxContainerId);	
+			}
+
+            // Init the Router
+            var routerInitCode = String.Format( "Router.run( routes, '{0}', function( Handler ) { {1} = React.renderToString(<Handler/>); });", url, ROUTER_OUTPUT_KEY );
+
+            Execute( routerInitCode );
+
+            // TODO: Might swap this timeout stuff for an actual Timespan check instead
+            var timeOutCounter = 0;
+            var maxCyclesBeforeTimeout = 10; // TODO: Config this
+
+            // Poll the engine to see if the router callback has fired
+            while( !HasVariable( ROUTER_OUTPUT_KEY ) && timeOutCounter <= maxCyclesBeforeTimeout ) {
+                timeOutCounter++;
+                Thread.Sleep(50); // DIRTY!
+            }
+
+            // Default to a timeout message
+            var html = "<p>Router init timed out waiting for response, try increasing the timeout in React.Config</p>";
+
+            if ( timeOutCounter <= maxCyclesBeforeTimeout ) {
+                html = Engine.GetVariableValue<string>( ROUTER_OUTPUT_KEY );
+            }
+
+            return string.Format(
+					"<{2} id=\"{0}\">{1}</{2}>",
+					containerId,
+					html,
+					"div"
+				);
+        }
 
 		/// <summary>
 		/// Renders the JavaScript required to initialise all components client-side. This will 
