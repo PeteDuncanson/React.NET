@@ -1,4 +1,5 @@
 ﻿/*
+ * 
  *  Copyright (c) 2014-2015, Facebook, Inc.
  *  All rights reserved.
  *
@@ -35,6 +36,7 @@ namespace React
 		{
 			UseHarmony = true;
 			ReuseJavaScriptEngines = true;
+            UsePreBundledScripts = false;
 		}
 
 		/// <summary>
@@ -70,7 +72,7 @@ namespace React
 		/// </summary>
 		/// <returns><c>true</c> if support for es6 syntax should be rewritten.</returns>
 		public bool UseHarmony { get; set; }
-		
+
 		/// <summary>
 		/// Specifies whether ES6 (harmony) syntax should be transformed
 		/// </summary>
@@ -80,7 +82,25 @@ namespace React
 			return this;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// A value indicating if all JS scripts (including React) are pre-bundled (ie via webpack or browserify), 
+        /// if so then our JS engines will not have React pre-loaded into them and they will have to be in the 
+        /// bundle to work
+        /// </summary>
+        public bool UsePreBundledScripts { get; set; }
+
+        /// <summary>
+        /// Specify if ReactJS is already bundled in with your webpack or browserified code
+        /// </summary>
+        /// <param name="useBundled"></param>
+        /// <returns></returns>
+        public IReactSiteConfiguration SetUsePreBundledScripts(bool useBundled)
+        {
+            UsePreBundledScripts = useBundled;
+            return this;
+        }
+        
+        /// <summary>
 		/// Gets or sets the configuration for JSON serializer.
 		/// </summary>
 		public JsonSerializerSettings JsonSerializerSettings { get; set; }
@@ -90,7 +110,7 @@ namespace React
 		/// </summary>
 		/// <param name="settings">Settings.</param>
 		/// <remarks>
-		/// Thic confiquration is used when component initialization script
+		/// This confiquration is used when component initialization script
 		/// is being generated server-side.
 		/// </remarks>
 		public IReactSiteConfiguration SetJsonSerializerSettings(JsonSerializerSettings settings)
@@ -145,6 +165,7 @@ namespace React
 		/// Defaults to <c>25</c>.
 		/// </summary>
 		public int? MaxEngines { get; set; }
+
 		/// <summary>
 		/// Sets the maximum number of engines that will be created in the pool. 
 		/// Defaults to <c>25</c>.

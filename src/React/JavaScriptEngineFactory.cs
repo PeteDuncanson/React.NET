@@ -120,7 +120,7 @@ namespace React
 			{
 				poolConfig.StartEngines = _config.StartEngines.Value;
 			}
-
+            
 			return new JsPool(poolConfig);
 		}
 
@@ -129,16 +129,21 @@ namespace React
 		/// </summary>
 		protected virtual void InitialiseEngine(IJsEngine engine)
 		{
-			var thisAssembly = typeof(ReactEnvironment).Assembly;
-			engine.ExecuteResource("React.Resources.shims.js", thisAssembly);
-			engine.ExecuteResource("React.Resources.react-with-addons.js", thisAssembly);
-			engine.Execute("var React = global.React");
+            // The default is to include React however users can bundle it up and 
+            // include it all in one file if they wish in which case nothing to do here.
+            if (!_config.UsePreBundledScripts)
+            {
+                var thisAssembly = typeof(ReactEnvironment).Assembly;
+                engine.ExecuteResource("React.Resources.shims.js", thisAssembly);
+                engine.ExecuteResource("React.Resources.react-with-addons.js", thisAssembly);
+                engine.Execute("var React = global.React");
 
-			// Only load JSX Transformer if engine supports it
-			if (engine.SupportsJsxTransformer())
-			{
-				engine.ExecuteResource("React.Resources.JSXTransformer.js", thisAssembly);
-			}
+                // Only load JSX Transformer if engine supports it
+                if (engine.SupportsJsxTransformer())
+                {
+                    engine.ExecuteResource("React.Resources.JSXTransformer.js", thisAssembly);
+                }
+            }
 		}
 
 		/// <summary>

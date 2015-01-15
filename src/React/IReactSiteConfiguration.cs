@@ -39,6 +39,11 @@ namespace React
 		/// <returns><c>true</c> if support for es6 syntax should be rewritten.</returns>
 		bool UseHarmony { get; set; }
 
+        /// <summary>
+        /// A value indicating if all scripts to be run (including React) are in bundles, you will need to include them via the React.Config manually
+        /// </summary>
+        bool UsePreBundledScripts { get; set; }
+
 		/// <summary>
 		/// Specifies whether ES6 (harmony) syntax should be transformed
 		/// </summary>
