@@ -7,6 +7,7 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  */
 
+using System.ComponentModel;
 using System.Web;
 using System.Web.Mvc;
 
@@ -54,6 +55,33 @@ namespace React.Web.Mvc
 			var result = reactComponent.RenderHtml();
 			return new HtmlString(result);
 		}
+
+        /// <summary>
+        /// Renders the HTML for correct route for the passed in url
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="htmlHelper"></param>
+        /// <param name="props"></param>
+        /// <param name="url">The url to match a route for, defaults to current requested path</param>
+        /// <param name="htmlTag">The html tag to render as the container for the out putted html, defaults to div</param>
+        /// <param name="containerId">The html ID for the container, will auto generate one if not provided</param>
+        /// <returns></returns>
+   		public static IHtmlString ReactRouter<T>(
+			this HtmlHelper htmlHelper, 
+			T props,
+			string url = null, 
+			string htmlTag = null,
+			string containerId = null
+		)
+		{
+   		    if (url == null)
+   		    {
+   		        url = HttpContext.Current.Request.Path;
+   		    }
+
+            return new HtmlString(Environment.GetRoutedHtmlForUrl( url, containerId ));
+		}
+
 
 		/// <summary>
 		/// Renders the specified React component, along with its client-side initialisation code.

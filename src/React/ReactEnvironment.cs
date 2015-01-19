@@ -328,7 +328,10 @@ namespace React
 			}
 
             // Init the Router
-            var routerInitCode = String.Format( "Router.run( routes, '{0}', function( Handler ) { {1} = React.renderToString(<Handler/>); });", url, ROUTER_OUTPUT_KEY );
+            //Execute("var React = global.React");
+            //Execute("var Router = global.Router");
+
+            var routerInitCode = TransformJsx(String.Format("Router.run( reactRoutesConfig, '{0}', function( Handler ) {{ {1} = React.renderToString(<Handler/>); }});", url, ROUTER_OUTPUT_KEY));
 
             Execute( routerInitCode );
 

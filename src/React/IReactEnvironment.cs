@@ -85,6 +85,14 @@ namespace React
 		/// <returns>The component</returns>
 		IReactComponent CreateComponent<T>(string componentName, T props, string containerId = null);
 
+        /// <summary>
+        /// Returns the HTML generated for the passed in route
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="containerId"></param>
+        /// <returns></returns>
+	    string GetRoutedHtmlForUrl(string url, string containerId = null);
+
 		/// <summary>
 		/// Renders the JavaScript required to initialise all components client-side. This will 
 		/// attach event handlers to the server-rendered HTML.
